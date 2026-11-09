@@ -126,13 +126,16 @@ public final class RepositorioCsv {
 
     private Herramienta parsearHerramienta(String linea, int numeroLinea) throws IOException {
         List<String> campos = CsvUtil.dividir(linea);
-        if (campos.size() < CAMPOS_HERRAMIENTA || campos.size() > CAMPOS_HERRAMIENTA + 1) {
+        boolean esCampoMenor = campos.size() < CAMPOS_HERRAMIENTA ;
+        boolean esCampoMayorMas1 = campos.size() > CAMPOS_HERRAMIENTA + 1;
+        if (esCampoMenor || esCampoMayorMas1) {
             throw error(ARCHIVO_HERRAMIENTAS, numeroLinea, "se esperaban " + CAMPOS_HERRAMIENTA + " campos");
         }
         try {
             int id = Integer.parseInt(campos.get(0).trim());
-            return new Herramienta(id, campos.get(1),
-                    campos.size() > CAMPOS_HERRAMIENTA && Boolean.parseBoolean(campos.get(2).trim()));
+            boolean esCampoMayor = campos.size() > CAMPOS_HERRAMIENTA;
+            boolean esValido = Boolean.parseBoolean(campos.get(2).trim());
+            return new Herramienta(id, campos.get(1), esCampoMayor && esValido);
         } catch (IllegalArgumentException e) {
             throw error(ARCHIVO_HERRAMIENTAS, numeroLinea, e.getMessage());
         }
