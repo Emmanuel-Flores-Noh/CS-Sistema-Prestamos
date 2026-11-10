@@ -127,15 +127,28 @@ public final class RepositorioCsv {
     private Herramienta parsearHerramienta(String linea, int numeroLinea) throws IOException {
         List<String> campos = CsvUtil.dividir(linea);
         boolean esCampoMenor = campos.size() < CAMPOS_HERRAMIENTA ;
-        boolean esCampoMayorMas1 = campos.size() > CAMPOS_HERRAMIENTA + 1;
-        if (esCampoMenor || esCampoMayorMas1) {
-            throw error(ARCHIVO_HERRAMIENTAS, numeroLinea, "se esperaban " + CAMPOS_HERRAMIENTA + " campos");
+        boolean esCampoMayor = campos.size() > CAMPOS_HERRAMIENTA + 1;
+
+        if (esCampoMenor || esCampoMayor) {
+            String mensaje = "se esperaban " + CAMPOS_HERRAMIENTA + " campos";
+            throw error(ARCHIVO_HERRAMIENTAS, numeroLinea, mensaje);
         }
         try {
+            /*
+                Técnica utilizada: Introduce explaning variables.
+                Se agregaron variables explicativas para:
+                - la primera condicional (esCampoMenor y esCampoMayor) 
+                - Elementos de objeto Herramienta y la condicional dentro del constructor (nombreHerramienta, esEstadoBaja, esValido, isDadaDeBaja)
+            */
             int id = Integer.parseInt(campos.get(0).trim());
-            boolean esCampoMayor = campos.size() > CAMPOS_HERRAMIENTA;
+            String nombreHerramienta = campos.get(1);
+
+            boolean esEstadoBaja = campos.size() > CAMPOS_HERRAMIENTA;
             boolean esValido = Boolean.parseBoolean(campos.get(2).trim());
-            return new Herramienta(id, campos.get(1), esCampoMayor && esValido);
+            
+            boolean isDadaDeBaja = esEstadoBaja && esValido;
+
+            return new Herramienta(id, nombreHerramienta, isDadaDeBaja);
         } catch (IllegalArgumentException e) {
             throw error(ARCHIVO_HERRAMIENTAS, numeroLinea, e.getMessage());
         }

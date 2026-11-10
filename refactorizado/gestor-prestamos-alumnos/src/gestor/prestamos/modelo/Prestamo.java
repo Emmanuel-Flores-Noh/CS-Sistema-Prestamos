@@ -133,6 +133,15 @@ public final class Prestamo {
             throw new IllegalArgumentException("La devolución no puede ser anterior al préstamo");
         }
         this.fechaDevolucion = fecha;
+        /*
+            Ténica utilizada: Move method (Desde servicio/GestorPrestamo.java).
+            Se movio la lógica para el cálculo de dias de retraso y penalización a la clase Prestamo.
+            Se considero este calculo cae en su responsabilidad.
+        */
+       
+        long retraso = Math.max(0, ChronoUnit.DAYS.between(getFechaLimite(), fecha));
+        this.diasRetraso = (int) retraso;
+        this.penalizacion = Math.round(retraso * penalizacionPorDia * 100.0) / 100.0;
     }
 
     /**
