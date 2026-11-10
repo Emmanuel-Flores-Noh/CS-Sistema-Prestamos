@@ -176,7 +176,7 @@ public final class GestorPrestamos {
      */
     public void devolver(int prestamoId, LocalDate fecha) {
         Prestamo prestamo = consultarPrestamo(prestamoId);
-        prestamo.registrarDevolucion(fecha, PENALIZACION_POR_DIA);
+        prestamo.registrarDevolucion(fecha);
         long retraso = Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(prestamo.getFechaLimite(), fecha));
         prestamo.setDiasRetraso((int) retraso);
         prestamo.setPenalizacion(Math.round(retraso * PENALIZACION_POR_DIA * 100.0) / 100.0);
