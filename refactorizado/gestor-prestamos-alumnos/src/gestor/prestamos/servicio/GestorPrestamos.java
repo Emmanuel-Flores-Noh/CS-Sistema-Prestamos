@@ -163,25 +163,37 @@ public final class GestorPrestamos {
         return nuevo;
     }
 
+    // REFACTOR: SEPARATE QUERY FROM MODIFIER
+    // La función original devolver mezclaba la modificación del préstamo con su búsqueda y retorno.
+    // Ahora devolver modifica el préstamo y consultarPrestamo realiza la consulta por separado.
     /**
      * Registra la devolución de un préstamo activo y calcula su penalización.
      *
      * @param prestamoId identificador del préstamo
      * @param fecha fecha real de devolución
-     * @return el préstamo actualizado
      * @throws IllegalArgumentException si el préstamo no existe o la fecha no es válida
      * @throws IllegalStateException si el préstamo ya estaba devuelto
      */
-    public Prestamo devolver(int prestamoId, LocalDate fecha) {
-        Prestamo prestamo = prestamos.stream()
-                .filter(p -> p.getId() == prestamoId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No existe el préstamo con ID " + prestamoId));
+    public void devolver(int prestamoId, LocalDate fecha) {
+        Prestamo prestamo = consultarPrestamo(prestamoId);
         prestamo.registrarDevolucion(fecha, PENALIZACION_POR_DIA);
         long retraso = Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(prestamo.getFechaLimite(), fecha));
         prestamo.setDiasRetraso((int) retraso);
         prestamo.setPenalizacion(Math.round(retraso * PENALIZACION_POR_DIA * 100.0) / 100.0);
-        return prestamo;
+    }
+
+    /**
+     * Busca un préstamo por su identificador sin modificarlo.
+     *
+     * @param prestamoId identificador del préstamo
+     * @return el préstamo encontrado
+     * @throws IllegalArgumentException si el préstamo no existe
+     */
+    public Prestamo consultarPrestamo(int prestamoId) {
+        return prestamos.stream()
+                .filter(p -> p.getId() == prestamoId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No existe el préstamo con ID " + prestamoId));
     }
 
     /**
