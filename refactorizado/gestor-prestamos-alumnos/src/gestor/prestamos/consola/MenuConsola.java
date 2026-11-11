@@ -168,22 +168,38 @@ public final class MenuConsola {
             System.out.println("\n  No hay herramientas disponibles para prestar.");
             return;
         }
-        System.out.println("\n  Herramientas disponibles:");
-        for (Herramienta herramienta : disponibles) {
-            System.out.printf("    %d. %s%n", herramienta.getId(), herramienta.getNombre());
-        }
+        mostrarHerramientasDisponibles(disponibles);
         List<Integer> ids = disponibles.stream().map(Herramienta::getId).toList();
         int id = entrada.pedirOpcion("ID de la herramienta: ", ids);
         String prestatario = entrada.pedirTexto("Nombre de quien la recibe: ");
 
-        LocalDate hoy = LocalDate.now();
-        LocalDate inicio = entrada.pedirFecha("Fecha de préstamo (AAAA-MM-DD, Enter = " + hoy + "): ", hoy);
-        LocalDate limitePorDefecto = inicio.plusDays(GestorPrestamos.DIAS_PRESTAMO_DEFECTO);
-        LocalDate limite = entrada.pedirFecha(
-                "Fecha límite (AAAA-MM-DD, Enter = " + limitePorDefecto + "): ", limitePorDefecto);
+        LocalDate inicio = pedirFechaPrestamo();
+        LocalDate limite = pedirFechaLimite(inicio);
 
         Prestamo nuevo = gestor.prestar(id, prestatario, inicio, limite);
         guardar();
+        mostrarPrestamoRealizado(nuevo);
+    }
+
+    private void mostrarHerramientasDisponibles(List<Herramienta> disponibles) {
+        System.out.println("\n  Herramientas disponibles:");
+        for (Herramienta herramienta : disponibles) {
+            System.out.printf("    %d. %s%n", herramienta.getId(), herramienta.getNombre());
+        }
+    }
+
+    private LocalDate pedirFechaPrestamo() {
+        LocalDate hoy = LocalDate.now();
+        return entrada.pedirFecha("Fecha de préstamo (AAAA-MM-DD, Enter = " + hoy + "): ", hoy);
+    }
+
+    private LocalDate pedirFechaLimite(LocalDate inicio) {
+        LocalDate limitePorDefecto = inicio.plusDays(GestorPrestamos.DIAS_PRESTAMO_DEFECTO);
+        return entrada.pedirFecha(
+                "Fecha límite (AAAA-MM-DD, Enter = " + limitePorDefecto + "): ", limitePorDefecto);
+    }
+
+    private void mostrarPrestamoRealizado(Prestamo nuevo) {
         System.out.printf("  '%s' prestada a %s hasta %s.%n",
                 nuevo.getHerramienta().getNombre(), nuevo.getPrestatario(), nuevo.getFechaLimite());
     }
@@ -225,17 +241,18 @@ public final class MenuConsola {
         LocalDate hoy = LocalDate.now();
         System.out.println("\n  Préstamos activos:");
         for (Prestamo p : activos) {
-            String situacion;
-            if (p.estado(hoy) == EstadoPrestamo.ATRASADO) {
-                long dias = p.getDiasRetrasoA(hoy);
-                double estimada = p.calcularPenalizacion(hoy, GestorPrestamos.PENALIZACION_POR_DIA);
-                situacion = String.format("ATRASADO %d día(s), penalización estimada %.2f €", dias, estimada);
-            } else {
-                situacion = "Al día, vence " + p.getFechaLimite();
-            }
             System.out.printf("    %s - %s | desde %s | %s%n",
-                    p.getHerramienta().getNombre(), p.getPrestatario(), p.getFechaPrestamo(), situacion);
+                    p.getHerramienta().getNombre(), p.getPrestatario(), p.getFechaPrestamo(), situacion(p, hoy));
         }
+    }
+
+    private String situacion(Prestamo p, LocalDate hoy) {
+        if (p.estado(hoy) == EstadoPrestamo.ATRASADO) {
+            return String.format("ATRASADO %d día(s), penalización estimada %.2f €",
+                    p.getDiasRetrasoA(hoy),
+                    p.calcularPenalizacion(hoy, GestorPrestamos.PENALIZACION_POR_DIA));
+        }
+        return "Al día, vence " + p.getFechaLimite();
     }
 
     private void verHistorial() {
