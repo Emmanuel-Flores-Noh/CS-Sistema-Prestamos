@@ -1,6 +1,7 @@
 package gestor.prestamos.persistencia;
 
 import gestor.prestamos.modelo.Herramienta;
+import gestor.prestamos.modelo.PeriodoPrestamo;
 import gestor.prestamos.modelo.Prestamo;
 
 import java.io.IOException;
@@ -144,9 +145,9 @@ public final class RepositorioCsv {
             String nombreHerramienta = campos.get(1);
 
             boolean esEstadoBaja = campos.size() > CAMPOS_HERRAMIENTA;
-            boolean esValido = Boolean.parseBoolean(campos.get(2).trim());
-            
-            boolean isDadaDeBaja = esEstadoBaja && esValido;
+            boolean esValido = esEstadoBaja && Boolean.parseBoolean(campos.get(2).trim());
+
+            boolean isDadaDeBaja = esValido;
 
             return new Herramienta(id, nombreHerramienta, isDadaDeBaja);
         } catch (IllegalArgumentException e) {
@@ -154,8 +155,14 @@ public final class RepositorioCsv {
         }
     }
 
-    private Prestamo parsearPrestamo(String linea, int numeroLinea, Map<Integer, Herramienta> porId)
-            throws IOException {
+    /**
+     * Convierte una línea del archivo prestamos.csv en un objeto Prestamo.
+     *
+     * Refactoring: Introduce Parameter Object. Antes el constructor de Prestamo
+     * recibía la fecha de préstamo y la fecha límite como dos parámetros sueltos;
+     * ahora se agrupan en un objeto PeriodoPrestamo y se pasa un solo parámetro.
+     */
+    private Prestamo parsearPrestamo(String linea, int numeroLinea, Map<Integer, Herramienta> porId) throws IOException {
         List<String> campos = CsvUtil.dividir(linea);
         if (campos.size() != CAMPOS_PRESTAMO) {
             throw error(ARCHIVO_PRESTAMOS, numeroLinea, "se esperaban " + CAMPOS_PRESTAMO + " campos");
@@ -173,7 +180,12 @@ public final class RepositorioCsv {
             LocalDate devolucion = textoDevolucion.isEmpty() ? null : LocalDate.parse(textoDevolucion);
             int diasRetraso = Integer.parseInt(campos.get(6).trim());
             double penalizacion = Double.parseDouble(campos.get(7).trim());
-            return new Prestamo(id, herramienta, campos.get(2), inicio, limite, devolucion, diasRetraso, penalizacion);
+
+            // Refactoring: Introduce Parameter Object.
+            // Antes: new Prestamo(id, herramienta, campos.get(2), inicio, limite, devolucion, diasRetraso, penalizacion);
+            // Ahora: las dos fechas (inicio y limite) se agrupan en PeriodoPrestamo y se envían como un solo parámetro.
+            PeriodoPrestamo periodoPrestamo = new PeriodoPrestamo(inicio, limite);
+            return new Prestamo(id, herramienta, campos.get(2), periodoPrestamo, devolucion, diasRetraso, penalizacion);
         } catch (IllegalArgumentException | DateTimeException e) {
             throw error(ARCHIVO_PRESTAMOS, numeroLinea, e.getMessage());
         }

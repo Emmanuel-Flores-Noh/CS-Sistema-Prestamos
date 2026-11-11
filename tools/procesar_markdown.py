@@ -134,16 +134,20 @@ def procesar_markdown(DOCS_DIR):
                 }}
                 
                 /* Tablas adaptadas a la paleta Slate */
-                table {{ 
+                table {{
+                    margin-left: -70px;
                     border-collapse: collapse; 
-                    width: 100%; 
-                    margin-bottom: 1.5em; 
+                    width: 750px;
+                    margin-bottom: 1.5em;
+                    table-layout: fixed;
                 }}
                 th, td {{ 
                     border: 1px solid #cbd5e1; /* Borde sutil slate-300 */
                     padding: 8pt 10pt; 
                     text-align: left;
                     vertical-align: top;
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
                 }}
                 th {{ 
                     background-color: #f8fafc; /* Fondo suave slate-50 */
