@@ -81,6 +81,10 @@ public final class MenuConsola {
     /**
      * Ejecuta la opción elegida.
      *
+     * Refactoring: Replace Conditional with Polymorphism. Antes este método usaba
+     * un switch para elegir el comportamiento según la opción ahora delega en el
+     * comando polimórfico correspondiente (IComando), eliminando el condicional.
+     *
      * @param opcion número de opción del menú
      * @return {@code true} si el usuario quiere salir de la aplicación
      */

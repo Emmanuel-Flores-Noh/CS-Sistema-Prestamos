@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ComandoVerPrestamosActivos implements IComando {
+
+    // Refactoring: Extract Method.
+    // Se extrajeron estadoAtrasadoPrestamo y estadoAlDiaPrestamo para separar
+    // el cálculo y la presentación que antes estaban dentro del condicional.
+
     /**
      * Metodo que devuelve el texto correspondiente a un prestamo atrasado
      * @param prestamo el prestamo que esta atrasado
@@ -41,8 +46,14 @@ public class ComandoVerPrestamosActivos implements IComando {
         for (Prestamo p : activos) {
             String situacion;
 
+            // Refactoring: Replace Temp with Query.
+            // La variable temporal 'hoy' se sustituyó por la consulta estaAtrasado(),
+            // que obtiene la fecha actual dentro del método.
+
             /**
-             * Refactorizacion Descompose conditional
+             * Refactoring: Decompose Conditional.
+             * El condicional original mezclaba cálculo y presentación; ahora delega
+             * en los métodos extraídos estadoAtrasadoPrestamo y estadoAlDiaPrestamo.
              */
             if( p.estaAtrasado() ) {
                 situacion = estadoAtrasadoPrestamo(p);

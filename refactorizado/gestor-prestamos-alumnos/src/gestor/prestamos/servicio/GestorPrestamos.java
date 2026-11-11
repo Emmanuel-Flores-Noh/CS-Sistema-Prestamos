@@ -183,7 +183,7 @@ public final class GestorPrestamos {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No existe el préstamo con ID " + prestamoId));
         /*
-            Técninca utilizada: Move method (Hacia modelo/Prestamo.java).
+            Técninca utilizada: Move Method (Hacia modelo/Prestamo.java).
             Se movio la lógica para calcular los dias de retraso y la penalización para la clase de prestamo.
             No se movio todo el método pues se considero solo el calculo movido tiene más sentido caer en responsabilidad de la otra clase.
         */

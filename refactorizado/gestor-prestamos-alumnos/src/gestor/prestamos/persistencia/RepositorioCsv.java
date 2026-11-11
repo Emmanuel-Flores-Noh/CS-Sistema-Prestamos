@@ -136,7 +136,7 @@ public final class RepositorioCsv {
         }
         try {
             /*
-                Técnica utilizada: Introduce explaning variables.
+                Técnica utilizada: Introduce Explaining Variable.
                 Se agregaron variables explicativas para:
                 - la primera condicional (esCampoMenor y esCampoMayor) 
                 - Elementos de objeto Herramienta y la condicional dentro del constructor (nombreHerramienta, esEstadoBaja, esValido, isDadaDeBaja)

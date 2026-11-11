@@ -24,6 +24,11 @@ public final class Prestamo {
 
       /**
      * Modificacion del constructor
+     *
+     * Refactoring: Introduce Parameter Object. Antes este constructor recibía la fecha
+     * de préstamo y la fecha límite como dos parámetros sueltos; ahora se agrupan en
+     * un objeto PeriodoPrestamo.
+     *
      * Crea un préstamo. Se usa tanto para préstamos nuevos como para restaurar
      * préstamos guardados; en un préstamo nuevo, la fecha de devolución es nula.
      *
@@ -152,7 +157,7 @@ public final class Prestamo {
         }
         this.fechaDevolucion = fecha;
         /*
-            Ténica utilizada: Move method (Desde servicio/GestorPrestamo.java).
+            Ténica utilizada: Move Method (Desde servicio/GestorPrestamo.java).
             Se movio la lógica para el cálculo de dias de retraso y penalización a la clase Prestamo.
             Se considero este calculo cae en su responsabilidad.
         */
