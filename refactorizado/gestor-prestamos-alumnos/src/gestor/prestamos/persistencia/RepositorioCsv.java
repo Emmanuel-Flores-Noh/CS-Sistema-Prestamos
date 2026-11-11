@@ -145,9 +145,9 @@ public final class RepositorioCsv {
             String nombreHerramienta = campos.get(1);
 
             boolean esEstadoBaja = campos.size() > CAMPOS_HERRAMIENTA;
-            boolean esValido = Boolean.parseBoolean(campos.get(2).trim());
-            
-            boolean isDadaDeBaja = esEstadoBaja && esValido;
+            boolean esValido = esEstadoBaja && Boolean.parseBoolean(campos.get(2).trim());
+
+            boolean isDadaDeBaja = esValido;
 
             return new Herramienta(id, nombreHerramienta, isDadaDeBaja);
         } catch (IllegalArgumentException e) {

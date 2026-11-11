@@ -103,7 +103,7 @@ public final class Prestamo {
      */
     public boolean estaAtrasado() {
         LocalDate hoy = LocalDate.now();
-        return !estaActivo() && hoy.isAfter(fechaLimite);
+        return estaActivo() && hoy.isAfter(fechaLimite);
     }
 
     /**
