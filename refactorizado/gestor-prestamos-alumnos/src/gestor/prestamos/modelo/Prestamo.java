@@ -123,15 +123,16 @@ public final class Prestamo {
         return getDiasRetrasoA(hoy) * precioPorDia;
     }
 
+    // REFACTOR: REMOVE PARAMETER
+    // Se eliminó penalizacionPorDia porque no se utilizaba al registrar la fecha de devolución.
     /**
-     * Registra la devolución de la herramienta, calculando el retraso y la penalización.
+     * Registra la fecha de devolución de la herramienta.
      *
      * @param fecha fecha real de devolución; no puede ser anterior al préstamo
-     * @param penalizacionPorDia importe en euros por cada día de retraso
      * @throws IllegalStateException si el préstamo ya estaba devuelto
      * @throws IllegalArgumentException si la fecha es nula o anterior al préstamo
      */
-    public void registrarDevolucion(LocalDate fecha, double penalizacionPorDia) {
+    public void registrarDevolucion(LocalDate fecha) {
         if (!estaActivo()) {
             throw new IllegalStateException("El préstamo ya fue devuelto");
         }
