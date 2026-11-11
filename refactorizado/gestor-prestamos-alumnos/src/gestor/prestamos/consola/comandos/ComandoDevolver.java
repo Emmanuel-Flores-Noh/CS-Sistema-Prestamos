@@ -33,7 +33,8 @@ public class ComandoDevolver implements IComando {
         LocalDate hoy = LocalDate.now();
         LocalDate fecha = entrada.pedirFecha("Fecha de devolución (AAAA-MM-DD, Enter = " + hoy + "): ", hoy);
 
-        Prestamo devuelto = gestor.devolver(id, fecha);
+        gestor.devolver(id, fecha);
+        Prestamo devuelto = gestor.consultarPrestamo(id);
         contexto.guardar();
 
         System.out.println("  Devolución registrada.");

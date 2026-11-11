@@ -19,8 +19,7 @@ public final class GestorPrestamos {
     /** Días de préstamo que se proponen por defecto. */
     public static final int DIAS_PRESTAMO_DEFECTO = 7;
 
-    /** Penalización en euros por cada día de retraso. */
-    public static final double PENALIZACION_POR_DIA = 2.0;
+    /** Move field PENALIZACION_POR_DIA a Prestamo, debido a que esa clase hace uso de esa constante **/
 
     private final List<Herramienta> herramientas;
     private final List<Prestamo> prestamos;
@@ -174,24 +173,17 @@ public final class GestorPrestamos {
      * @throws IllegalArgumentException si el préstamo no existe o la fecha no es válida
      * @throws IllegalStateException si el préstamo ya estaba devuelto
      */
-    public Prestamo devolver(int prestamoId, LocalDate fecha) {
+    public void devolver(int prestamoId, LocalDate fecha) {
         Prestamo prestamo = prestamos.stream()
                 .filter(p -> p.getId() == prestamoId)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No existe el préstamo con ID " + prestamoId));
-        prestamo.registrarDevolucion(fecha, PENALIZACION_POR_DIA);
         /*
             Técninca utilizada: Move method (Hacia modelo/Prestamo.java).
             Se movio la lógica para calcular los dias de retraso y la penalización para la clase de prestamo.
             No se movio todo el método pues se considero solo el calculo movido tiene más sentido caer en responsabilidad de la otra clase.
         */
-        return prestamo;
-    public void devolver(int prestamoId, LocalDate fecha) {
-        Prestamo prestamo = consultarPrestamo(prestamoId);
         prestamo.registrarDevolucion(fecha);
-        long retraso = Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(prestamo.getFechaLimite(), fecha));
-        prestamo.setDiasRetraso((int) retraso);
-        prestamo.setPenalizacion(Math.round(retraso * PENALIZACION_POR_DIA * 100.0) / 100.0);
     }
 
     /**

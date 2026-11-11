@@ -18,6 +18,9 @@ public final class Prestamo {
     private int diasRetraso;
     private double penalizacion;
 
+    /** Penalización en euros por cada día de retraso. */
+    public static final double PENALIZACION_POR_DIA = 2.0;
+
     /**
      * Crea un préstamo. Se usa tanto para préstamos nuevos como para restaurar
      * préstamos guardados; en un préstamo nuevo, la fecha de devolución es nula.
@@ -151,7 +154,7 @@ public final class Prestamo {
        
         long retraso = Math.max(0, ChronoUnit.DAYS.between(getFechaLimite(), fecha));
         this.diasRetraso = (int) retraso;
-        this.penalizacion = Math.round(retraso * penalizacionPorDia * 100.0) / 100.0;
+        this.penalizacion = Math.round(retraso * PENALIZACION_POR_DIA * 100.0) / 100.0;
     }
 
     /**

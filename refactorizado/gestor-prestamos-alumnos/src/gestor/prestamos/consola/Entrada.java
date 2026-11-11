@@ -1,6 +1,7 @@
 package gestor.prestamos.consola;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Objects;
@@ -65,22 +66,53 @@ public final class Entrada {
      * Pide una fecha en formato {@code AAAA-MM-DD}. Si el usuario pulsa Enter y hay un valor
      * por defecto, se devuelve ese valor.
      *
+     * Refactoring: Replace Exception with Test. Antes se usaba try/catch con
+     * DateTimeParseException para saber si la fecha era válida; ahora se comprueba
+     * antes con esFechaValida() y solo se parsea cuando ya se sabe que es correcta.
+     *
      * @param mensaje texto que se muestra antes de leer
      * @param valorPorDefecto fecha que se usa al pulsar Enter, o {@code null} si no hay
      * @return la fecha introducida o el valor por defecto
      */
     public LocalDate pedirFecha(String mensaje, LocalDate valorPorDefecto) {
         while (true) {
-            String texto = leer(mensaje).trim();
-            if (texto.isEmpty() && valorPorDefecto != null) {
+            String textoFecha = leer(mensaje).trim();
+
+            if (textoFecha.isEmpty() && valorPorDefecto != null) {
                 return valorPorDefecto;
             }
-            try {
-                return LocalDate.parse(texto);
-            } catch (DateTimeParseException e) {
-                System.out.println("  Formato inválido. Usa AAAA-MM-DD.");
+
+            if (esFechaValida(textoFecha)) {
+                return LocalDate.parse(textoFecha);
             }
+
+            System.out.println("  Formato inválido. Usa AAAA-MM-DD.");
         }
+    }
+
+    /**
+     * Comprueba si el texto es una fecha real del calendario con formato AAAA-MM-DD,
+     * sin usar excepciones (Replace Exception with Test). Se descartó una regex porque
+     * no cubría el 29 de febrero en años no bisiestos; YearMonth sí los maneja.
+     *
+     * @param textoFecha texto escrito por el usuario
+     * @return {@code true} si el texto es una fecha que existe en el calendario
+     */
+    private boolean esFechaValida(String textoFecha) {
+        if (textoFecha == null || !textoFecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            return false;
+        }
+
+        int anioNumero = Integer.parseInt(textoFecha.substring(0, 4));
+        int mesNumero = Integer.parseInt(textoFecha.substring(5, 7));
+        int diaNumero = Integer.parseInt(textoFecha.substring(8, 10));
+
+        if (mesNumero < 1 || mesNumero > 12) {
+            return false;
+        }
+
+        int diasDelMes = YearMonth.of(anioNumero, mesNumero).lengthOfMonth();
+        return diaNumero >= 1 && diaNumero <= diasDelMes;
     }
 
     private String leer(String mensaje) {
