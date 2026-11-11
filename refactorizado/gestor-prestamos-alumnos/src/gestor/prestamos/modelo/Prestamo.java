@@ -90,6 +90,15 @@ public final class Prestamo {
     }
 
     /**
+     * Determina si un prestamo esta atrasado en su devolucion
+     * @return true si esta atrasado, false si no es el caso.
+     */
+    public boolean estaAtrasado() {
+        LocalDate hoy = LocalDate.now();
+        return !estaActivo() && hoy.isAfter(fechaLimite);
+    }
+
+    /**
      * Devuelve los días de retraso a fecha de referencia. Si el préstamo ya se devolvió,
      * devuelve el retraso registrado; si sigue abierto, lo calcula hasta la fecha indicada.
      *
@@ -114,15 +123,16 @@ public final class Prestamo {
         return getDiasRetrasoA(hoy) * precioPorDia;
     }
 
+    // REFACTOR: REMOVE PARAMETER
+    // Se eliminó penalizacionPorDia porque no se utilizaba al registrar la fecha de devolución.
     /**
-     * Registra la devolución de la herramienta, calculando el retraso y la penalización.
+     * Registra la fecha de devolución de la herramienta.
      *
      * @param fecha fecha real de devolución; no puede ser anterior al préstamo
-     * @param penalizacionPorDia importe en euros por cada día de retraso
      * @throws IllegalStateException si el préstamo ya estaba devuelto
      * @throws IllegalArgumentException si la fecha es nula o anterior al préstamo
      */
-    public void registrarDevolucion(LocalDate fecha, double penalizacionPorDia) {
+    public void registrarDevolucion(LocalDate fecha) {
         if (!estaActivo()) {
             throw new IllegalStateException("El préstamo ya fue devuelto");
         }
