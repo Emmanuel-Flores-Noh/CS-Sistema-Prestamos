@@ -90,6 +90,15 @@ public final class Prestamo {
     }
 
     /**
+     * Determina si un prestamo esta atrasado en su devolucion
+     * @return true si esta atrasado, false si no es el caso.
+     */
+    public boolean estaAtrasado() {
+        LocalDate hoy = LocalDate.now();
+        return !estaActivo() && hoy.isAfter(fechaLimite);
+    }
+
+    /**
      * Devuelve los días de retraso a fecha de referencia. Si el préstamo ya se devolvió,
      * devuelve el retraso registrado; si sigue abierto, lo calcula hasta la fecha indicada.
      *
